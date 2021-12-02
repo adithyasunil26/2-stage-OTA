@@ -1,0 +1,39 @@
+* lambda
+.include ../TSMC_180nm.txt
+
+.param SUPPLY=1.8
+.param LAMBDA=0.09u
+.param length={1u}
+.param width_N={10u}
+.param width_P={10u}
+
+.global gnd vdd
+
+Vdd	vdd	gnd	'SUPPLY'
+
+* Vg g gnd 1.8
+Vg g gnd -1.8
+Vd d1 gnd 0
+
+* M1      d1     g      gnd     gnd  CMOSN   W={width_N}   L={length}
+* + AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N} AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+M2      d1     g      vdd     vdd  CMOSP   W={width_P}   L={length}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P} AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+* .dc Vd 0 1.8 0.1
+.dc Vd -1.8 0 0.1
+
+.control
+run
+
+save all @M1[id]
+
+* plot -vd#branch
+* plot deriv(-vd#branch)
+* print minimum(deriv(-vd#branch))/maximum(-vd#branch)
+
+plot vd#branch
+plot deriv(vd#branch)
+print maximum(deriv(vd#branch))/maximum(vd#branch)
+
+.endc
