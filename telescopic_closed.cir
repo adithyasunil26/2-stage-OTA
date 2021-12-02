@@ -14,24 +14,22 @@
 .global gnd vdd
 
 Vdd	vdd	gnd	'SUPPLY'
-* Vss	vss	gnd	-1*'SUPPLY'
 Iref gnd ref 400u
 Vb1 b1 gnd 1.4
 Vb2 b2 gnd 0.7
 
 * Transient and AC
-vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
-vinn inn gnd dc 0.9 ac -0.01m sin(0.9 -0.01m 10k 0 0 0)
+* vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+* vinn inn gnd dc 0.9 ac -0.01m sin(0.9 -0.01m 10k 0 0 0)
 
 * Slew Rate
-* vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
+vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
 
 * Offset
 * vinp inp gnd 0.9
 
-CL out gnd 1p
 Cc d4 k 2p
-Rs k out 1k
+Rs k inn 1k
 
 M1      d1     inn      d9     gnd  CMOSN   W={width_1234}   L={length}
 + AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
@@ -56,42 +54,35 @@ M9      d9    ref      gnd    gnd  CMOSN   W={width_910}   L={length}
 M10      ref     ref     gnd     gnd  CMOSN   W={width_910}   L={length}
 + AS={5*width_910*LAMBDA} PS={10*LAMBDA+2*width_910} AD={5*width_910*LAMBDA} PD={10*LAMBDA+2*width_910}
 
-M11      out    d4       vdd    vdd  CMOSP   W={width_11}   L={length}
+M11      inn    d4       vdd    vdd  CMOSP   W={width_11}   L={length}
 + AS={5*width_11*LAMBDA} PS={10*LAMBDA+2*width_11} AD={5*width_11*LAMBDA} PD={10*LAMBDA+2*width_11}
-M12      out    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
+M12      inn    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
 + AS={5*width_12*LAMBDA} PS={10*LAMBDA+2*width_12} AD={5*width_12*LAMBDA} PD={10*LAMBDA+2*width_12}
 
 *.tran 1u 1m
-.ac dec 10 1 500Meg
+*.op
+*.ac dec 10 1 500Meg
 
 
 * Slew rate & Offset
-* Vk out inn 0
-* Rs2 inn gnd 1k
-*.ic out 0
-*.tran 0.1n 1u
-
-* Noise
-*.noise v(out) vinp dec 100 1 500MEG
+.tran 0.1n 1u
 
 .control
 run
 
-*plot v(out) 
-*plot v(inp) 
-*plot v(inn)
-*plot v(inp)-v(inn)
 
-*fourier 10k v(inp)-v(inn)
-*fourier 10k v(out)
+plot v(inp) v(inn) deriv(v(inn))
+plot v(inp)-v(inn)
 
-*plot (db(v(out))-db(v(inp)-v(inn)))
-*plot 180/PI*phase(v(out)/(v(inp)-v(inn)))
+fourier 10k v(inp)-v(inn)
+fourier 10k v(inn)
 
-plot (db(v(out))-db(v(inp)-v(inn))) 180/PI*phase(v(out)/(v(inp)-v(inn)))
+plot (db(v(inn))-db(v(inp)))
+plot 180/PI*phase(v(inn)/(v(inp)))
 
+plot (db(v(inn))-db(v(inp))) 180/PI*phase(v(inn)/(v(inp)))
 
 * Slew rate
-plot v(inp) V(out)
+plot v(inp) V(inn)
 
 .endc
