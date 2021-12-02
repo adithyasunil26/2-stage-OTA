@@ -1,0 +1,90 @@
+* Telescopic
+.include TSMC_180nm.txt
+
+.param SUPPLY=1.8
+.param LAMBDA=0.09u
+.param length=0.36u
+
+.param width_1234={0.36*71u}
+.param width_5678={0.36*142u}
+.param width_910={0.36*142u}
+.param width_11={0.36*139u}
+.param width_12={0.36*79u}
+
+.global gnd vdd
+
+Vdd	vdd	gnd	'SUPPLY'
+Vss	vss	gnd	-1*'SUPPLY'
+Iref gnd ref 400u
+Vb1 b1 gnd 1.4
+Vb2 b2 gnd 0.7
+
+* Transient and AC
+vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+vinn inn gnd dc 0.9 ac -0.01m sin(0.9 -0.01m 10k 0 0 0)
+
+* Slew Rate
+*vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
+
+CL out gnd 1p
+Cc d4 k 2p
+Rs k out 1k
+
+M1      d1     inn      d9     gnd  CMOSN   W={width_1234}   L={length}
++ AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
+M2      d2     inp      d9     gnd  CMOSN   W={width_1234}   L={length}
++ AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
+M3      d3     b1       d1    gnd  CMOSN   W={width_1234}   L={length}
++ AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
+M4      d4     b1       d2    gnd  CMOSN   W={width_1234}   L={length}
++ AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
+M5      d3     b2      d5     vdd  CMOSP   W={width_5678}   L={length}
++ AS={5*width_5678*LAMBDA} PS={10*LAMBDA+2*width_5678} AD={5*width_5678*LAMBDA} PD={10*LAMBDA+2*width_5678}
+M6      d4     b2      d6     vdd  CMOSP   W={width_5678}   L={length}
++ AS={5*width_5678*LAMBDA} PS={10*LAMBDA+2*width_5678} AD={5*width_5678*LAMBDA} PD={10*LAMBDA+2*width_5678}
+M7      d5     d3       vdd    vdd  CMOSP   W={width_5678}   L={length}
++ AS={5*width_5678*LAMBDA} PS={10*LAMBDA+2*width_5678} AD={5*width_5678*LAMBDA} PD={10*LAMBDA+2*width_5678}
+M8      d6     d3       vdd    vdd  CMOSP   W={width_5678}   L={length}
++ AS={5*width_5678*LAMBDA} PS={10*LAMBDA+2*width_5678} AD={5*width_5678*LAMBDA} PD={10*LAMBDA+2*width_5678}
+
+
+M9      d9    ref      gnd    gnd  CMOSN   W={width_910}   L={length}
++ AS={5*width_910*LAMBDA} PS={10*LAMBDA+2*width_910} AD={5*width_910*LAMBDA} PD={10*LAMBDA+2*width_910}
+M10      ref     ref     gnd     gnd  CMOSN   W={width_910}   L={length}
++ AS={5*width_910*LAMBDA} PS={10*LAMBDA+2*width_910} AD={5*width_910*LAMBDA} PD={10*LAMBDA+2*width_910}
+
+M11      out    d4       vdd    vdd  CMOSP   W={width_11}   L={length}
++ AS={5*width_11*LAMBDA} PS={10*LAMBDA+2*width_11} AD={5*width_11*LAMBDA} PD={10*LAMBDA+2*width_11}
+M12      out    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
++ AS={5*width_12*LAMBDA} PS={10*LAMBDA+2*width_12} AD={5*width_12*LAMBDA} PD={10*LAMBDA+2*width_12}
+
+* .tran 1u 1m
+.ac dec 10 1 500Meg
+
+
+* Slew rate
+*Rs1 out inn 1Meg
+*Rs2 inn gnd 1Meg
+*.ic out 0
+*.tran 0.1n 1u
+
+.control
+run
+
+plot v(out) 
+plot v(inp) 
+plot v(inn)
+plot v(inp)-v(inn)
+
+fourier 10k v(inp)-v(inn)
+fourier 10k v(out)
+
+plot (db(v(out))-db(v(inp)-v(inn)))
+plot 180/PI*phase(v(out)/(v(inp)-v(inn)))
+
+plot (db(v(out))-db(v(inp)-v(inn))) 180/PI*phase(v(out)/(v(inp)-v(inn)))
+
+* Slew rate
+plot v(inp) V(out)
+
+.endc
