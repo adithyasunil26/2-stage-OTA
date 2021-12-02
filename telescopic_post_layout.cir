@@ -1,0 +1,144 @@
+* Telescopic
+.include TSMC_180nm.txt
+
+.param SUPPLY=1.8
+.param LAMBDA=0.09u
+.param length=0.36u
+
+.param width_1234={0.36*71u}
+.param width_5678={0.36*142u}
+.param width_910={0.36*142u}
+.param width_11={0.36*139u}
+.param width_12={0.36*79u}
+
+.global gnd vdd
+
+Vdd	vdd	gnd	'SUPPLY'
+* Vss	vss	gnd	-1*'SUPPLY'
+Iref gnd ref 400u
+Vb1 b1 gnd 1.4
+Vb2 b2 gnd 0.7
+
+* Transient and AC
+vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+vinn inn gnd dc 0.9 ac -0.01m sin(0.9 -0.01m 10k 0 0 0)
+
+* Slew Rate
+* vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
+
+* Offset
+* vinp inp gnd 0.9
+
+CL out gnd 1p
+Cc d4 k 2p
+Rs k out 1k
+
+
+.option scale=0.09u
+
+M1000 d4 b1 d2 gnd CMOSN w=284 l=4
++  ad=1420 pd=578 as=2840 ps=1156
+M1001 d4 b2 d6 vdd CMOSP w=568 l=4
++  ad=2840 pd=1146 as=5680 ps=2292
+M1002 gnd ref out gnd CMOSN w=316 l=4
++  ad=7260 pd=2934 as=1580 ps=642
+M1003 d6 d3 vdd vdd CMOSP w=568 l=4
++  ad=0 pd=0 as=8460 ps=3414
+M1004 d3 b1 d1 gnd CMOSN w=284 l=4
++  ad=1420 pd=578 as=2840 ps=1156
+M1005 d9 inp d2 gnd CMOSN w=284 l=4
++  ad=5680 pd=2302 as=0 ps=0
+M1006 ref ref gnd gnd CMOSN w=568 l=4
++  ad=2840 pd=1146 as=0 ps=0
+M1007 d3 b2 d5 vdd CMOSP w=568 l=4
++  ad=2840 pd=1146 as=5680 ps=2292
+M1008 d9 inn d1 gnd CMOSN w=284 l=4
++  ad=0 pd=0 as=0 ps=0
+M1009 d5 d3 vdd vdd CMOSP w=568 l=4
++  ad=0 pd=0 as=0 ps=0
+M1010 out d4 vdd vdd CMOSP w=556 l=4
++  ad=2780 pd=1122 as=0 ps=0
+M1011 d9 ref gnd gnd CMOSN w=568 l=4
++  ad=0 pd=0 as=0 ps=0
+C0 gnd inn 0.08fF
+C1 d9 inp 0.10fF
+C2 d4 d1 0.02fF
+C3 out d2 0.09fF
+C4 gnd ref 0.04fF
+C5 d4 b1 0.21fF
+C6 out d1 0.11fF
+C7 b2 vdd 0.23fF
+C8 d9 ref 0.23fF
+C9 d1 d3 0.02fF
+C10 d4 vdd 0.21fF
+C11 b2 d3 0.21fF
+C12 d4 out 0.02fF
+C13 b2 d6 0.10fF
+C14 d9 d2 0.02fF
+C15 b1 d3 0.10fF
+C16 out vdd 0.02fF
+C17 d4 d3 0.14fF
+C18 vdd d3 0.35fF
+C19 d6 vdd 0.04fF
+C20 out d3 0.02fF
+C21 d5 vdd 0.06fF
+C22 d6 d3 0.15fF
+C23 out d9 0.02fF
+C24 d5 d3 0.12fF
+C25 d6 d5 0.13fF
+C26 gnd d9 0.04fF
+C27 gnd inp 0.08fF
+C28 d4 d2 0.02fF
+C29 out ref 0.03fF
+C30 gnd gnd 0.70fF
+C31 d9 gnd 0.06fF
+C32 inp gnd 0.13fF
+C33 inn gnd 0.13fF
+C34 ref gnd 0.49fF
+C35 d2 gnd 0.06fF
+C36 d1 gnd 0.06fF
+C37 b1 gnd 0.04fF
+C38 out gnd 0.91fF
+C39 d6 gnd 0.00fF
+C40 d5 gnd 0.00fF
+C41 d4 gnd 0.07fF
+C42 b2 gnd 0.04fF
+C43 d3 gnd 0.09fF
+C44 vdd gnd 63.16fF
+
+
+
+.tran 1u 1m
+*.ac dec 10 1 500Meg
+
+
+* Slew rate & Offset
+* Vk out inn 0
+* Rs2 inn gnd 1k
+*.ic out 0
+*.tran 0.1n 1u
+
+* Noise
+*.noise v(out) vinp dec 100 1 500MEG
+
+.control
+run
+
+*plot v(out) 
+*plot v(inp) 
+*plot v(inn)
+*plot v(inp)-v(inn)
+
+*fourier 10k v(inp)-v(inn)
+*fourier 10k v(out)
+
+*plot (db(v(out))-db(v(inp)-v(inn)))
+*plot 180/PI*phase(v(out)/(v(inp)-v(inn)))
+
+plot (db(v(out))-db(v(inp)-v(inn))) 180/PI*phase(v(out)/(v(inp)-v(inn)))
+
+
+* Slew rate
+plot v(inp) V(out)
+
+.endc
