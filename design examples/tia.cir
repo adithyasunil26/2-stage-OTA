@@ -1,0 +1,69 @@
+* Telescopic
+.include ../TSMC_180nm.txt
+
+.param SUPPLY=1.8
+.param LAMBDA=0.09u
+.param length=0.36u
+
+.param width_1234={0.36*71u}
+.param width_5678={0.36*142u}
+.param width_910={0.36*142u}
+.param width_11={0.36*139u}
+.param width_12={0.36*79u}
+
+.global gnd vdd
+
+Vdd	vdd	gnd	'SUPPLY'
+* Vss	vss	gnd	-1*'SUPPLY'
+Iref gnd ref 400u
+Vb1 b1 gnd 1.4
+Vb2 b2 gnd 0.7
+
+Iin inn gnd sin(0 10u 10k 0 0 0)
+
+
+Cc d4 k 2p
+Rs k out 1k
+
+M1      d1     inn      d9     gnd  CMOSN   W={width_1234}   L={length}
++ AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
+M2      d2     gnd      d9     gnd  CMOSN   W={width_1234}   L={length}
++ AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
+M3      d3     b1       d1    gnd  CMOSN   W={width_1234}   L={length}
++ AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
+M4      d4     b1       d2    gnd  CMOSN   W={width_1234}   L={length}
++ AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
+M5      d3     b2      d5     vdd  CMOSP   W={width_5678}   L={length}
++ AS={5*width_5678*LAMBDA} PS={10*LAMBDA+2*width_5678} AD={5*width_5678*LAMBDA} PD={10*LAMBDA+2*width_5678}
+M6      d4     b2      d6     vdd  CMOSP   W={width_5678}   L={length}
++ AS={5*width_5678*LAMBDA} PS={10*LAMBDA+2*width_5678} AD={5*width_5678*LAMBDA} PD={10*LAMBDA+2*width_5678}
+M7      d5     d3       vdd    vdd  CMOSP   W={width_5678}   L={length}
++ AS={5*width_5678*LAMBDA} PS={10*LAMBDA+2*width_5678} AD={5*width_5678*LAMBDA} PD={10*LAMBDA+2*width_5678}
+M8      d6     d3       vdd    vdd  CMOSP   W={width_5678}   L={length}
++ AS={5*width_5678*LAMBDA} PS={10*LAMBDA+2*width_5678} AD={5*width_5678*LAMBDA} PD={10*LAMBDA+2*width_5678}
+
+
+M9      d9    ref      gnd    gnd  CMOSN   W={width_910}   L={length}
++ AS={5*width_910*LAMBDA} PS={10*LAMBDA+2*width_910} AD={5*width_910*LAMBDA} PD={10*LAMBDA+2*width_910}
+M10      ref     ref     gnd     gnd  CMOSN   W={width_910}   L={length}
++ AS={5*width_910*LAMBDA} PS={10*LAMBDA+2*width_910} AD={5*width_910*LAMBDA} PD={10*LAMBDA+2*width_910}
+
+M11      out    d4       vdd    vdd  CMOSP   W={width_11}   L={length}
++ AS={5*width_11*LAMBDA} PS={10*LAMBDA+2*width_11} AD={5*width_11*LAMBDA} PD={10*LAMBDA+2*width_11}
+M12      out    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
++ AS={5*width_12*LAMBDA} PS={10*LAMBDA+2*width_12} AD={5*width_12*LAMBDA} PD={10*LAMBDA+2*width_12}
+
+Rf out inn 500k
+
+.tran 1u 1m
+
+.control
+run
+
+plot Iin
+plot v(out)
+plot i(inn) v(out)
+
+print maximum(v(out))
+print minimum(v(out))
+.endc
