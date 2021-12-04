@@ -6,9 +6,9 @@
 .param length=0.36u
 
 .param width_1234={0.36*71u}
-.param width_5678={0.36*142u}
+.param width_5678={0.36*160u}
 .param width_910={0.36*142u}
-.param width_11={0.36*139u}
+.param width_11={0.36*157u}
 .param width_12={0.36*79u}
 
 .global gnd vdd
@@ -16,7 +16,7 @@
 Vdd	vdd	gnd	'SUPPLY'
 Iref gnd ref 400u
 Vb1 b1 gnd 1.4
-Vb2 b2 gnd 0.7
+Vb2 b2 gnd 0.75
 
 * Transient and AC
 * vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 

@@ -6,18 +6,17 @@
 .param length=0.36u
 
 .param width_1234={0.36*71u}
-.param width_5678={0.36*142u}
+.param width_5678={0.36*160u}
 .param width_910={0.36*142u}
-.param width_11={0.36*139u}
+.param width_11={0.36*157u}
 .param width_12={0.36*79u}
 
 .global gnd vdd
 
 Vdd	vdd	gnd	'SUPPLY'
-* Vss	vss	gnd	-1*'SUPPLY'
 Iref gnd ref 400u
 Vb1 b1 gnd 1.4
-Vb2 b2 gnd 0.7
+Vb2 b2 gnd 0.75
 
 * Transient and AC
 vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
@@ -62,7 +61,7 @@ M12      out    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
 + AS={5*width_12*LAMBDA} PS={10*LAMBDA+2*width_12} AD={5*width_12*LAMBDA} PD={10*LAMBDA+2*width_12}
 
 *.tran 1u 1m
-.ac dec 10 1 500Meg
+*.ac dec 10 1 500Meg
 
 
 * Slew rate & Offset
@@ -72,7 +71,7 @@ M12      out    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
 *.tran 0.1n 1u
 
 * Noise
-*.noise v(out) vinp dec 100 1 500MEG
+.noise v(out) vinp dec 100 1 500MEG
 
 .control
 run
