@@ -9,24 +9,34 @@
 .param width_5678={0.36*160u}
 .param width_910={0.36*142u}
 .param width_11={0.36*157u}
-.param width_12={0.36*79u}
+.param width_12={0.36*70u}
 
 .global gnd vdd
 
-Vdd	vdd	gnd	'SUPPLY'
+*Vdd	vdd	gnd	'SUPPLY'
+
+*PSRR
+Vdd	vdd	gnd	dc 'SUPPLY' ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+
 Iref gnd ref 400u
 Vb1 b1 gnd 1.4
 Vb2 b2 gnd 0.75
 
 * Transient and AC
-vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
-vinn inn gnd dc 0.9 ac -0.01m sin(0.9 -0.01m 10k 0 0 0)
+*vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+*vinn inn gnd dc 0.9 ac -0.01m sin(0.9 -0.01m 10k 0 0 0)
 
 * Slew Rate
 * vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
 
 * Offset
-* vinp inp gnd 0.9
+vinp inp gnd 0
+vinn inn gnd 0
+
+*CMRR
+*vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+*vinn inn gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0)
+
 
 CL out gnd 1p
 Cc d4 k 2p
@@ -61,20 +71,21 @@ M12      out    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
 + AS={5*width_12*LAMBDA} PS={10*LAMBDA+2*width_12} AD={5*width_12*LAMBDA} PD={10*LAMBDA+2*width_12}
 
 *.tran 1u 1m
-*.ac dec 10 1 500Meg
+.ac dec 10 1 500Meg
 
-
-* Slew rate & Offset
-* Vk out inn 0
-* Rs2 inn gnd 1k
-*.ic out 0
-*.tran 0.1n 1u
-
-* Noise
-.noise v(out) vinp dec 100 1 500MEG
+*.noise v(out) vinp dec 100 1 1000MEG
 
 .control
 run
+
+set hcopypscolor = 1
+set color0=white
+set color1=black
+
+*setplot noise1
+*plot inoise_spectrum
+*setplot noise2
+*plot inoise_total
 
 *plot v(out) 
 *plot v(inp) 
@@ -84,13 +95,20 @@ run
 *fourier 10k v(inp)-v(inn)
 *fourier 10k v(out)
 
-*plot (db(v(out))-db(v(inp)-v(inn)))
+plot (v(out))/(v(inp)-v(inn))
 *plot 180/PI*phase(v(out)/(v(inp)-v(inn)))
 
-plot (db(v(out))-db(v(inp)-v(inn))) 180/PI*phase(v(out)/(v(inp)-v(inn)))
+*plot (db(v(out))-db(v(inp)-v(inn))) 180/PI*phase(v(out)/(v(inp)-v(inn)))
 
 
 * Slew rate
-plot v(inp) V(out)
+*plot v(inp) V(out)
 
+* CMRR
+*plot v(out)/v(inp)
+*plot (db(v(out))-db(v(inp)))
+
+* PSRR
+plot v(out)/v(vdd)
+plot (db(v(out))-db(v(vdd)))
 .endc

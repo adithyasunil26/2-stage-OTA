@@ -9,7 +9,7 @@
 .param width_5678={0.36*160u}
 .param width_910={0.36*142u}
 .param width_11={0.36*157u}
-.param width_12={0.36*79u}
+.param width_12={0.36*70u}
 
 .global gnd vdd
 
@@ -18,18 +18,22 @@ Iref gnd ref 400u
 Vb1 b1 gnd 1.4
 Vb2 b2 gnd 0.75
 
+*op
+*vinp inp gnd 0.9
+
 * Transient and AC
-* vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
-* vinn inn gnd dc 0.9 ac -0.01m sin(0.9 -0.01m 10k 0 0 0)
+* vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0)
 
 * Slew Rate
-vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
+*vinp inp gnd pulse(1 0 -1n 100p 100p 500n 1u)
 
 * Offset
-* vinp inp gnd 0.9
+vinp inp gnd 0.9
 
-Cc d4 k 2p
-Rs k inn 1k
+*vinp inp gnd dc 0.9 ac 0.6 sin(0.9 0.6 10k 0 0 0)
+
+Cc k inn 2p
+Rs d4 k 1k
 
 M1      d1     inn      d9     gnd  CMOSN   W={width_1234}   L={length}
 + AS={5*width_1234*LAMBDA} PS={10*LAMBDA+2*width_1234} AD={5*width_1234*LAMBDA} PD={10*LAMBDA+2*width_1234}
@@ -61,28 +65,45 @@ M12      inn    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
 
 *.tran 1u 1m
 *.op
-*.ac dec 10 1 500Meg
+*.ac dec 10 1 1000Meg
+*.dc vinp 0 1.8 0.01
 
 
 * Slew rate & Offset
-.tran 0.1n 1u
+*.tran 0.001u 1u
 
 .control
 run
 
+set hcopypscolor = 1
+set color0=white
+set color1=black
 
-plot v(inp) v(inn) deriv(v(inn))
-plot v(inp)-v(inn)
+*plot v(inn) v(inp)
 
-fourier 10k v(inp)-v(inn)
-fourier 10k v(inn)
+*plot v(inp) v(inn) deriv(v(inn))
+*plot v(inp)-v(inn)
 
-plot (db(v(inn))-db(v(inp)))
-plot 180/PI*phase(v(inn)/(v(inp)))
+*fourier 10k v(inp)-v(inn)
+*fourier 10k v(inn)
 
-plot (db(v(inn))-db(v(inp))) 180/PI*phase(v(inn)/(v(inp)))
+*plot v(inn)/v(inp)
+*plot 180/PI*phase(v(inn)/(v(inp)))
+
+*plot (db(v(inn))-db(v(inp))) 
+*plot 180/PI*phase(v(inn)/(v(inp)))
 
 * Slew rate
 plot v(inp) V(inn)
+*plot deriv(v(inn))
+
+* PSRR
+*plot v(inn)
+*plot v(inn)/v(vdd)
+*plot (db(v(inn))-db(v(vdd)))
+
+* ICMR 
+*plot v(inn)
+*plot deriv(v(inn))
 
 .endc

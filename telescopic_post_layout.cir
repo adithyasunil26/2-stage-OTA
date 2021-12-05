@@ -3,35 +3,38 @@
 
 .param SUPPLY=1.8
 .param LAMBDA=0.09u
-.param length=0.36u
-
-.param width_1234={0.36*71u}
-.param width_5678={0.36*142u}
-.param width_910={0.36*142u}
-.param width_11={0.36*139u}
-.param width_12={0.36*79u}
 
 .global gnd vdd
 
-Vdd	vdd	gnd	'SUPPLY'
-* Vss	vss	gnd	-1*'SUPPLY'
+*Vdd	vdd	gnd	'SUPPLY'
+
+*PSRR
+Vdd	vdd	gnd	dc 'SUPPLY' ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+
+
 Iref gnd ref 400u
 Vb1 b1 gnd 1.4
 Vb2 b2 gnd 0.7
 
 * Transient and AC
-vinp inp gnd dc 0.9 ac 0.05m sin(0.9 0.05m 10k 0 0 0) 
-vinn inn gnd dc 0.9 ac -0.05m sin(0.9 -0.05m 10k 0 0 0)
+*vinp inp gnd dc 0.9 ac 0.05m sin(0.9 0.05m 10k 0 0 0) 
+*vinn inn gnd dc 0.9 ac -0.05m sin(0.9 -0.05m 10k 0 0 0)
 
 * Slew Rate
 * vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
 
 * Offset
-* vinp inp gnd 0.9
+vinp inp gnd 0
+vinn inn gnd 0
+
+*CMRR
+*vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+*vinn inn gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0)
+
 
 CL out gnd 1p
-Cc d4 k 2p
-Rs k out 1k
+Cc out k 2p
+Rs k d4 1k
 
 
 .option scale=0.09u
@@ -40,59 +43,59 @@ M1000 d4 b1 d2 gnd CMOSN w=284 l=4
 +  ad=1420 pd=578 as=2840 ps=1156
 M1001 d4 b2 d6 vdd CMOSP w=640 l=4
 +  ad=3200 pd=1290 as=6400 ps=2580
-M1002 gnd ref out gnd CMOSN w=316 l=4
-+  ad=7260 pd=2934 as=1580 ps=642
-M1003 d6 d3 vdd vdd CMOSP w=640 l=4
+M1002 d6 d3 vdd vdd CMOSP w=640 l=4
 +  ad=0 pd=0 as=9540 ps=3846
-M1004 d3 b1 d1 gnd CMOSN w=284 l=4
+M1003 d3 b1 d1 gnd CMOSN w=284 l=4
 +  ad=1420 pd=578 as=2840 ps=1156
-M1005 d9 inp d2 gnd CMOSN w=284 l=4
+M1004 d9 inp d2 gnd CMOSN w=284 l=4
 +  ad=5680 pd=2302 as=0 ps=0
-M1006 ref ref gnd gnd CMOSN w=568 l=4
-+  ad=2840 pd=1146 as=0 ps=0
-M1007 d3 b2 d5 vdd CMOSP w=640 l=4
+M1005 ref ref gnd gnd CMOSN w=568 l=4
++  ad=2840 pd=1146 as=7080 ps=2862
+M1006 d3 b2 d5 vdd CMOSP w=640 l=4
 +  ad=3200 pd=1290 as=6400 ps=2580
-M1008 d9 inn d1 gnd CMOSN w=284 l=4
+M1007 d9 inn d1 gnd CMOSN w=284 l=4
 +  ad=0 pd=0 as=0 ps=0
-M1009 d5 d3 vdd vdd CMOSP w=640 l=4
+M1008 d5 d3 vdd vdd CMOSP w=640 l=4
 +  ad=0 pd=0 as=0 ps=0
-M1010 out d4 vdd vdd CMOSP w=628 l=4
+M1009 out d4 vdd vdd CMOSP w=628 l=4
 +  ad=3140 pd=1266 as=0 ps=0
+M1010 gnd ref out gnd CMOSN w=280 l=4
++  ad=0 pd=0 as=1400 ps=570
 M1011 d9 ref gnd gnd CMOSN w=568 l=4
 +  ad=0 pd=0 as=0 ps=0
-C0 out d9 0.02fF
-C1 d4 out 0.02fF
-C2 d5 d6 0.13fF
-C3 d3 d1 0.02fF
-C4 vdd d6 0.04fF
-C5 d4 b1 0.21fF
-C6 vdd out 0.02fF
-C7 d4 d1 0.02fF
-C8 d2 d9 0.02fF
-C9 d4 d2 0.02fF
-C10 ref d9 0.23fF
-C11 d3 b2 0.21fF
-C12 out d1 0.11fF
-C13 d3 d4 0.14fF
-C14 inp d9 0.10fF
-C15 out d2 0.09fF
-C16 d3 d5 0.12fF
-C17 gnd ref 0.04fF
-C18 vdd d3 0.35fF
-C19 out ref 0.03fF
-C20 d3 d6 0.15fF
-C21 gnd inn 0.08fF
-C22 gnd d3 0.16fF
-C23 vdd b2 0.23fF
-C24 gnd inp 0.08fF
-C25 d3 out 0.02fF
-C26 b2 d6 0.10fF
-C27 vdd d4 0.21fF
-C28 gnd b2 0.16fF
-C29 d3 b1 0.10fF
-C30 gnd d9 0.04fF
-C31 vdd d5 0.06fF
-C32 gnd d4 0.02fF
+C0 d1 d3 0.02fF
+C1 out d4 0.02fF
+C2 d6 d5 0.13fF
+C3 d9 out 0.02fF
+C4 b1 d3 0.10fF
+C5 out d3 0.02fF
+C6 d6 b2 0.10fF
+C7 d6 d3 0.15fF
+C8 ref out 0.03fF
+C9 d5 d3 0.12fF
+C10 d2 out 0.09fF
+C11 vdd out 0.02fF
+C12 d9 inp 0.10fF
+C13 d4 d3 0.14fF
+C14 d1 out 0.11fF
+C15 vdd d6 0.04fF
+C16 b2 d3 0.21fF
+C17 gnd d4 0.02fF
+C18 vdd d5 0.06fF
+C19 d9 ref 0.23fF
+C20 gnd d9 0.04fF
+C21 d2 d4 0.02fF
+C22 vdd d4 0.21fF
+C23 gnd b2 0.16fF
+C24 d9 d2 0.02fF
+C25 gnd inp 0.08fF
+C26 d1 d4 0.02fF
+C27 vdd b2 0.23fF
+C28 gnd d3 0.16fF
+C29 gnd inn 0.08fF
+C30 b1 d4 0.21fF
+C31 vdd d3 0.35fF
+C32 gnd ref 0.04fF
 C33 d9 gnd 0.06fF
 C34 inp gnd 0.13fF
 C35 inn gnd 0.13fF
@@ -106,13 +109,12 @@ C42 d5 gnd 0.00fF
 C43 d4 gnd 0.07fF
 C44 b2 gnd 0.04fF
 C45 d3 gnd 0.09fF
-C46 gnd gnd 15.15fF
+C46 gnd gnd 15.36fF
 C47 vdd gnd 70.82fF
 
 
-
-.tran 1u 1m
-*.ac dec 10 1 500Meg
+*.tran 1u 1m
+.ac dec 10 1 500Meg
 
 
 * Slew rate & Offset
@@ -122,23 +124,29 @@ C47 vdd gnd 70.82fF
 *.tran 0.1n 1u
 
 * Noise
-*.noise v(out) vinp dec 100 1 500MEG
+*.noise v(out) vinp dec 100 1 1000MEG
 
 .control
 run
+
+set hcopypscolor = 1
+set color0=white
+set color1=black
 
 *plot v(out) 
 *plot v(inp) 
 *plot v(inn)
 *plot v(inp)-v(inn)
 
-plot v(inp)-v(inn) v(out)
+*plot v(inp)-v(inn) v(out)
 
 *fourier 10k v(inp)-v(inn)
 *fourier 10k v(out)
 
-plot (db(v(out))-db(v(inp)-v(inn)))
-plot 180/PI*phase(v(out)/(v(inp)-v(inn)))
+plot (v(out))/(v(inp)-v(inn))
+
+*plot (db(v(out))-db(v(inp)-v(inn)))
+*plot 180/PI*phase(v(out)/(v(inp)-v(inn)))
 
 plot (db(v(out))-db(v(inp)-v(inn))) 180/PI*phase(v(out)/(v(inp)-v(inn)))
 
@@ -147,7 +155,15 @@ plot (db(v(out))-db(v(inp)-v(inn))) 180/PI*phase(v(out)/(v(inp)-v(inn)))
 *plot v(inp) V(out)
 
 *Swing
-print maximum(v(out))
-print minimum(v(out))
+*print maximum(v(out))
+*print minimum(v(out))
+
+* CMRR
+plot v(out)/v(inp)
+plot (db(v(out))-db(v(inp)))
+
+* PSRR
+plot v(out)/v(vdd)
+plot (db(v(out))-db(v(vdd)))
 
 .endc
