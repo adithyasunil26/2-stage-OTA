@@ -9,18 +9,18 @@
 .param width_5678={0.36*160u}
 .param width_910={0.36*142u}
 .param width_11={0.36*157u}
-.param width_12={0.36*79u}
+.param width_12={0.36*70u}
 
 .global gnd vdd
 
 Vdd	vdd	gnd	'SUPPLY'
-Vss vss gnd -1.8
 Iref gnd ref 400u
 Vb1 b1 gnd 1.4
-Vb2 b2 gnd 0.7
-Vb3 inp gnd 1.8
+Vb2 b2 gnd 0.75
+Vb3 inp gnd 0
 
-Iin gnd inn sin(0 1u 10k 0 0 0)
+*Iin gnd inn 0
+Iin gnd inn dc 1u ac 2u sin(1u 2u 10k 0 0 0)
 
 Cc d4 k 2p
 Rs k out 1k
@@ -54,16 +54,16 @@ M12      out    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
 + AS={5*width_12*LAMBDA} PS={10*LAMBDA+2*width_12} AD={5*width_12*LAMBDA} PD={10*LAMBDA+2*width_12}
 
 Rf out inn 500k
-Cf out inn 10p
 
-.tran 1u 1m
+*.tran 0.001m 1m
+*.ac dec 10 1 1000Meg
+.dc Iin 0 1u 0.1u 
 
 .control
 run
 
-plot Iin
+plot v(out)/(0.5u)
 plot v(out)
-plot i(inn) v(out)
 
 print maximum(v(out))
 print minimum(v(out))

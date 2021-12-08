@@ -69,8 +69,8 @@ M1      i     s      o     gnd  CMOSN   W={width_s}   L={length_s}
 .ends
 
 
-C1 inn s1s 10p
-C2 inn s2s 10p
+C1 inn s1s 1p
+C2 inn s2s 1p
 xsw1 in s1s s1 switch
 xsw2 in s2s s2 switch
 xsw3 inn out s3 switch
