@@ -25,12 +25,12 @@ Vb2 b2 gnd 0.75
 * vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0)
 
 * Slew Rate
-*vinp inp gnd pulse(1 0 -1n 100p 100p 500n 1u)
+vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
 
 * Offset
-vinp inp gnd 0.9
+*vinp inp gnd 0.9
 
-*vinp inp gnd dc 0.9 ac 0.6 sin(0.9 0.6 10k 0 0 0)
+*vinp inp gnd dc 0.9 ac 0.9 sin(0.9 0.9 10k 0 0 0)
 
 Cc k inn 2p
 Rs d4 k 1k
@@ -70,7 +70,7 @@ M12      inn    ref      gnd     gnd  CMOSN   W={width_12}   L={length}
 
 
 * Slew rate & Offset
-*.tran 0.001u 1u
+.tran 0.001u 1u
 
 .control
 run
@@ -95,7 +95,7 @@ set color1=black
 
 * Slew rate
 plot v(inp) V(inn)
-*plot deriv(v(inn))
+plot deriv(v(inn))
 
 * PSRR
 *plot v(inn)
@@ -106,4 +106,6 @@ plot v(inp) V(inn)
 *plot v(inn)
 *plot deriv(v(inn))
 
+print maximum(v(inn))
+print minimum(v(inn))
 .endc

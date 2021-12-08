@@ -13,25 +13,25 @@
 
 .global gnd vdd
 
-*Vdd	vdd	gnd	'SUPPLY'
+Vdd	vdd	gnd	'SUPPLY'
 
 *PSRR
-Vdd	vdd	gnd	dc 'SUPPLY' ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+*Vdd	vdd	gnd	dc 'SUPPLY' ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
 
 Iref gnd ref 400u
 Vb1 b1 gnd 1.4
 Vb2 b2 gnd 0.75
 
 * Transient and AC
-*vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
-*vinn inn gnd dc 0.9 ac -0.01m sin(0.9 -0.01m 10k 0 0 0)
+vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
+vinn inn gnd dc 0.9 ac -0.01m sin(0.9 -0.01m 10k 0 0 0)
 
 * Slew Rate
-* vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
+*vinp inp gnd pulse(1.8 0 -1n 100p 100p 500n 1u)
 
 * Offset
-vinp inp gnd 0
-vinn inn gnd 0
+*vinp inp gnd 0
+*vinn inn gnd 0
 
 *CMRR
 *vinp inp gnd dc 0.9 ac 0.01m sin(0.9 0.01m 10k 0 0 0) 
@@ -84,6 +84,7 @@ set color1=black
 
 *setplot noise1
 *plot inoise_spectrum
+*plot onoise_spectrum
 *setplot noise2
 *plot inoise_total
 
@@ -95,20 +96,23 @@ set color1=black
 *fourier 10k v(inp)-v(inn)
 *fourier 10k v(out)
 
-plot (v(out))/(v(inp)-v(inn))
+*plot (v(out))/(v(inp)-v(inn))
 *plot 180/PI*phase(v(out)/(v(inp)-v(inn)))
 
-*plot (db(v(out))-db(v(inp)-v(inn))) 180/PI*phase(v(out)/(v(inp)-v(inn)))
+plot (db(v(out))-db(v(inp)-v(inn))) 180/PI*phase(v(out)/(v(inp)-v(inn)))
 
 
 * Slew rate
-*plot v(inp) V(out)
+plot v(inp) V(out)
 
 * CMRR
 *plot v(out)/v(inp)
 *plot (db(v(out))-db(v(inp)))
 
 * PSRR
-plot v(out)/v(vdd)
-plot (db(v(out))-db(v(vdd)))
+*plot v(out)/v(vdd)
+*plot (db(v(out))-db(v(vdd)))
+
+*plot vdd#branch
+*print avg(vdd#branch)
 .endc
